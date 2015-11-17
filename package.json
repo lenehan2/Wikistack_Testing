@@ -18,6 +18,7 @@
   "homepage": "https://github.com/lenehan2/Wikistack_Testing#readme",
   "devDependencies": {
     "chai": "^3.4.1",
+    "chai-spies": "^0.7.1",
     "mocha": "^2.3.4"
   }
 }
