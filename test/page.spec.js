@@ -11,7 +11,7 @@ chai.use(require('chai-things'));
 var Promise = require('bluebird');
 
 
-describe("The Models",function(){
+xdescribe("The Models",function(){
 	describe("Validate Schemas",function(){
 		
 		describe("page",function(){

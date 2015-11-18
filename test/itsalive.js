@@ -5,14 +5,14 @@ chai.use(spies);
 
 //console.log("Funny");
 
-describe("simple math",function(){
+xdescribe("simple math",function(){
 	it("should add up",function(){
 		expect(2+2).to.equal(4);
 	});
 });
 
 
-describe("A timeout function",function(){
+xdescribe("A timeout function",function(){
 	it("should timeout for a given amount of time",function(done){
 		var newDate = new Date();
 		setTimeout(function(){
@@ -25,7 +25,7 @@ describe("A timeout function",function(){
 });
 
 
-describe("forEach spy",function(){
+xdescribe("forEach spy",function(){
 
 	// before(function(){
 	
