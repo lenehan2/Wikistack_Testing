@@ -44,12 +44,21 @@ pageSchema.virtual('renderedContent').get(function () {
 });
 
 pageSchema.pre('validate', function (next) {
-    if (this.title) {
-        this.urlTitle = this.title.replace(/\s/g, '_').replace(/\W/g, '');
-    } else {
-        this.urlTitle = Math.random().toString(36).substring(2, 7);
-    }
-    next();
+    //This version adds a title as well as a urlTitle when title is nonexistent:
+
+    // if (!this.title) {
+    //     this.title = Math.random().toString(36).substring(2, 7);      
+    // } 
+    //  this.urlTitle = this.title.replace(/\s/g, '_').replace(/\W/g, '');
+    // next();
+
+   if (this.title) {
+       this.urlTitle = this.title.replace(/\s/g, '_').replace(/\W/g, '');
+   } else {
+       this.urlTitle = Math.random().toString(36).substring(2, 7);
+   }
+   next();
+
 });
 
 pageSchema.statics.findByTag = function (tag) {

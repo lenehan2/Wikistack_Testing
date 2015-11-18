@@ -3,7 +3,7 @@ var expect = chai.expect;
 var spies = require('chai-spies');
 chai.use(spies);
 
-console.log("Funny");
+//console.log("Funny");
 
 describe("simple math",function(){
 	it("should add up",function(){

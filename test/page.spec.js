@@ -8,10 +8,11 @@ var Page = model.Page;
 var User = model.User;
 chai.should();
 chai.use(require('chai-things'));
+var Promise = require('bluebird');
 
 
 describe("The Models",function(){
-	describe("Schema",function(){
+	describe("Validate Schemas",function(){
 		
 		describe("page",function(){
 			var page;
@@ -28,6 +29,8 @@ describe("The Models",function(){
 				})
 			})
 
+			//???? Should there be an error or should the pre-validate hook
+			//add a title?
 			it("Throws an error without title",function(done){
 				page.content = "Test content";
 				page.validate(function(err){
@@ -81,11 +84,73 @@ describe("The Models",function(){
 		});
 	});
 
-	xdescribe("Hooks",function(){
+	describe("Hooks",function(){
 
-		it("Creates a random title when title is not give",function(done){})
+			
+			beforeEach(function(done){
+				var page1, page2, pageObject1, pageObject2;
 
-		it("It replaces the title with a url safe title",function(done){})
+				page1 = {title: 'Hook 1',
+							 content: 'Hook 1 content', 
+							tags: ['hooks']
+							};
+				page2 = {
+							 content: 'Hook 2 content', 
+							tags: ['hooks']
+							};
+				//pageObject1 = new Page(page1);		
+				//pageObject2 = new Page(page2);
+				//pageObject1.save(done);
+				///pageObject2.validate( done);
+				 
+				 Page.create([page1],done); //don't create page2
+
+				//  Promise.all([pageObject1.save(), pageObject2.save()])
+				//  // .then(null, function(err){
+				//  // 	//console.log(err);
+				//  // 	done();
+				//  // })
+				// .then(function(promises){
+				// 	//console.log("promises\n" + promises);
+				// 	done();
+				// })
+
+				//.then(null, done);
+			});
+
+
+		it("It replaces the title with a url safe title",function(done){
+			Page.findOne({title: "Hook 1"})
+				.then(function(page){
+
+					expect(page.urlTitle).to.equal("Hook_1");
+					done();
+				})
+				.then(null,done);
+
+
+		})
+
+		xit("Creates a random title when title is not given",function(done){
+			Page.findOne({content: "Hook 2 content"})
+                .then(function(page){
+                	//console.log(page);
+                    expect(page.urlTitle).to.be.ok;
+                    done();
+                })
+                .then(null,done);
+		})
+
+		afterEach(function(done){
+			//find pages and remove them
+
+			Page.find({$or: [{content: "Hook 2 content"},{title: "Hook 1"}]})
+			.remove()
+			.exec()
+			.then(function(){
+				done();
+			})
+		});
 
 
 	});
