@@ -6,6 +6,8 @@ chai.use(spies);
 var model = require('../wikistack/models/index.js');
 var Page = model.Page;
 var User = model.User;
+chai.should();
+chai.use(require('chai-things'));
 
 
 describe("The Models",function(){
@@ -147,23 +149,85 @@ describe("The Models",function(){
 
 		});
 
-		xdescribe("FindOrCreate",function(){
+		describe("FindOrCreate",function(){
+
+			var user;
+			beforeEach(function(done){
+
+				user = {name: 'Jon Snow',
+						email: 'jon@snow.com', 
+						};
+
+				User.create([user], done);
+			});
 
 			it("FindOrCreate is able to find a user",function(done){
-
+				User.findOrCreate({name: 'Jon Snow',email:'jon@snow.com'})
+				.then(function(user){
+					expect(user.email).to.equal('jon@snow.com');
+					done()
+				})
+				.then(null,done);
 			});
 			
 			it("It is able to create user if none is found",function(done){
-
+				User.findOrCreate({name: 'Arya Stark',email:'needle@sword.com'})
+				.then(function(user){
+					expect(user.email).to.equal('needle@sword.com');
+					done()
+				})
+				.then(null,done);
 			});
+
+			afterEach(function(done){
+
+				User.find({$or: [{name: 'Jon Snow'},{name: 'Arya Stark'}]})
+				.remove()
+				.exec()
+				.then(function(){
+					done();
+				})
+			})
 
 		})		
 	})
 
 	xdescribe("Methods",function(){
 		describe("findSimilar",function(){
-			it("Is able to find pages with similar tags",function(done){
 
+			var page1, 
+				page2,
+				page3;
+
+				beforeEach(function(done){
+
+					page1 = {title: 'Test1',
+								 content: 'Here is content', 
+								tags: ['fullstack', 'table', 'testTag']
+								};
+					page2 = {title: 'Test2',
+								 content: 'Here is content #2', 
+								tags: ['testTag']
+								};
+					page3 = {title: 'Test3',
+								 content: 'Here is content #3', 
+								tags: ['randomTag']
+								};
+
+					Page.create([page1,page2], done);
+			});			
+		//Skipped over, must come back//	
+			it("Is able to find pages with similar tags",function(done){
+				Page.findOne({title: 'Test1'})
+				.then(function(page){
+					return page.findSimilar();
+				})
+				.then(function(pagesArray){
+					console.log(pagesArray)
+					pagesArray[0].tags.should.contain.an.item.that.deep.equals("testTag")
+					done();
+				})
+				.then(null,done);
 			});
 			it("Never gets itself",function(done){
 
@@ -171,16 +235,54 @@ describe("The Models",function(){
 			it("Only gets pages with similar tags",function(done){
 
 			});
+		//Skipped up to here//
+			afterEach(function(done){
+
+			Page.find({$or: [{title: 'Test1'},{title: 'Test2'},{title: 'Test3'}]})
+			.remove()
+			.exec()
+			.then(function(){
+				done();
+			})
+		})
+
 		})
 	})
 
-	xdescribe("Virtuals",function(){
+	describe("Virtuals",function(){
 
 		describe("route",function(){
+			var page1
+				beforeEach(function(done){
+
+					
+					page1 = {	title: 'The Virtual Title',
+								 content: 'Virtual1', 
+								tags: ['fullstack', 'table', 'testTag']
+								};				
+					Page.create([page1], done);
+				})
+
 
 			it("creates a url with /wiki/ + the urlTitle",function(done){
+				Page.findOne({title: "The Virtual Title"})
+				.then(function(page){
 
+					expect(page.route).to.equal("/wiki/The_Virtual_Title");
+					done();
+				})
+				.then(null,done);
 			});
+		
+			afterEach(function(done){
+
+			Page.find({$or: [{content: "Virtual"},{title: "The Virtual Title"}]})
+			.remove()
+			.exec()
+			.then(function(){
+				done();
+			})
+		})
 		})
 
 	})
